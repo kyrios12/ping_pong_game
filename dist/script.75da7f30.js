@@ -117,190 +117,194 @@ parcelRequire = (function (modules, cache, entry, globalName) {
   }
 
   return newRequire;
-})({"Ball.js":[function(require,module,exports) {
+})({"script.js":[function(require,module,exports) {
 "use strict";
 
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-var INITIAL_VELOCITY = .025;
-var VELOCITY_INCREASE = .00001;
-var Ball = /*#__PURE__*/function () {
-  function Ball(ballElem) {
-    _classCallCheck(this, Ball);
-    this.ballElem = ballElem;
-    this.reset();
-  }
-  _createClass(Ball, [{
-    key: "x",
-    get: function get() {
-      return parseFloat(getComputedStyle(this.ballElem).getPropertyValue("--x"));
-    },
-    set: function set(value) {
-      this.ballElem.style.setProperty("--x", value);
-    }
-  }, {
-    key: "y",
-    get: function get() {
-      return parseFloat(getComputedStyle(this.ballElem).getPropertyValue("--y"));
-    },
-    set: function set(value) {
-      this.ballElem.style.setProperty("--y", value);
-    }
-  }, {
-    key: "rect",
-    value: function rect() {
-      return this.ballElem.getBoundingClientRect();
-    }
-  }, {
-    key: "reset",
-    value: function reset() {
-      this.x = 50;
-      this.y = 50;
-      this.direction = {
-        x: 0
-      };
-      while (Math.abs(this.direction.x) <= 0.2 || Math.abs(this.direction.x) >= 0.9) {
-        var heading = randomNumberBetween(0, 2 * Math.PI);
-        this.direction = {
-          x: Math.cos(heading),
-          y: Math.sin(heading)
-        };
+var first_rod = document.getElementById("rod-one");
+var second_rod = document.getElementById("rod-two");
+var ball = document.getElementById("ball");
+var current_timeout_is_running = false;
+var current_score = {
+  first: 0,
+  second: 0
+};
+var action = {
+  loosing_side: "",
+  lost: false
+};
+function centeralise_element(element) {
+  element.style.left = (document.documentElement.clientWidth / 2 - element.offsetWidth / 2).toString() + "px";
+  element.style.left = (document.documentElement.clientWidth / 2 - element.offsetWidth / 2).toString() + "px";
+  if (element == ball) {
+    if (action.lost) {
+      if (action.loosing_side == "first") {
+        ball.style.top = (first_rod.clientHeight + 5).toString() + "px";
+      } else {
+        ball.style.top = (document.documentElement.clientHeight - second_rod.clientHeight - ball.clientHeight - 5).toString() + "px";
       }
-
-      //console.log(this.direction)
-      this.velocity = INITIAL_VELOCITY;
-    }
-  }, {
-    key: "update",
-    value: function update(delta, paddleRects) {
-      this.x += this.direction.x * this.velocity * delta;
-      this.y += this.direction.y * this.velocity * delta;
-      this.velocity += VELOCITY_INCREASE * delta;
-      var rect = this.rect();
-      if (rect.bottom >= window.innerHeight || rect.top <= 0) {
-        this.direction.y *= -1;
-      }
-      if (paddleRects.some(function (r) {
-        return isCollision(r, rect);
-      })) {
-        this.direction.x *= -1;
-      }
-
-      /*if(rect.right >= window.innerWidth || rect.left <= 0) { // Bounces left and right. Testing purposes only
-          this.direction.x *= -1
-      }*/
-    }
-  }]);
-  return Ball;
-}();
-exports.default = Ball;
-function randomNumberBetween(min, max) {
-  return Math.random() * (max - min) + min;
-}
-function isCollision(rect1, rect2) {
-  return rect1.left <= rect2.right && rect1.right >= rect2.left && rect1.top <= rect2.bottom && rect1.bottom >= rect2.top;
-}
-},{}],"Paddle.js":[function(require,module,exports) {
-"use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = void 0;
-function _typeof(obj) { "@babel/helpers - typeof"; return _typeof = "function" == typeof Symbol && "symbol" == typeof Symbol.iterator ? function (obj) { return typeof obj; } : function (obj) { return obj && "function" == typeof Symbol && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }, _typeof(obj); }
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, _toPropertyKey(descriptor.key), descriptor); } }
-function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); Object.defineProperty(Constructor, "prototype", { writable: false }); return Constructor; }
-function _toPropertyKey(arg) { var key = _toPrimitive(arg, "string"); return _typeof(key) === "symbol" ? key : String(key); }
-function _toPrimitive(input, hint) { if (_typeof(input) !== "object" || input === null) return input; var prim = input[Symbol.toPrimitive]; if (prim !== undefined) { var res = prim.call(input, hint || "default"); if (_typeof(res) !== "object") return res; throw new TypeError("@@toPrimitive must return a primitive value."); } return (hint === "string" ? String : Number)(input); }
-var SPEED = .02;
-var Paddle = /*#__PURE__*/function () {
-  function Paddle(paddleElem) {
-    _classCallCheck(this, Paddle);
-    this.paddleElem = paddleElem;
-    this.reset();
+    } else element.style.top = (document.documentElement.clientHeight / 2).toString() + "px";
   }
-  _createClass(Paddle, [{
-    key: "position",
-    get: function get() {
-      return parseFloat(getComputedStyle(this.paddleElem).getPropertyValue("--position"));
-    },
-    set: function set(value) {
-      this.paddleElem.style.setProperty("--position", value);
+}
+function add_event_listener_to_rods() {
+  window.addEventListener("keydown", function (event) {
+    var code = event.keyCode;
+    if (code == 68) {
+      var left_numeric = parseInt(first_rod.style.left.substring(0, first_rod.style.left.length - 2));
+      left_numeric += 20;
+      if (left_numeric + first_rod.offsetWidth > document.documentElement.clientWidth) {
+        left_numeric = document.documentElement.clientWidth - first_rod.offsetWidth;
+      }
+      first_rod.style.left = left_numeric.toString() + "px";
+      second_rod.style.left = left_numeric.toString() + "px";
+    } else if (code == 65) {
+      var _left_numeric = parseInt(first_rod.style.left.substring(0, first_rod.style.left.length - 2));
+      _left_numeric -= 20;
+      if (_left_numeric < 0) {
+        _left_numeric = 0;
+      }
+      first_rod.style.left = _left_numeric.toString() + "px";
+      second_rod.style.left = _left_numeric.toString() + "px";
     }
-  }, {
-    key: "rect",
-    value: function rect() {
-      return this.paddleElem.getBoundingClientRect();
+  });
+}
+function touched_upper_bar() {
+  var ball_top_numerical = ball.getBoundingClientRect().top;
+  var ball_left_numerical = ball.getBoundingClientRect().left;
+  var bar_left_numerical = parseInt(first_rod.style.left.substring(0, first_rod.style.left.length - 2));
+  if (ball_top_numerical <= first_rod.clientHeight && ball_left_numerical + ball.clientWidth / 2 > bar_left_numerical && ball_left_numerical + ball.clientWidth / 2 < bar_left_numerical + first_rod.clientWidth) {
+    if (!current_timeout_is_running) {
+      current_timeout_is_running = true;
+      setTimeout(function () {
+        current_score.first++;
+        current_timeout_is_running = false;
+        console.log("first", current_score.first);
+      }, 200);
     }
-  }, {
-    key: "reset",
-    value: function reset() {
-      this.position = 50;
-    }
-  }, {
-    key: "update",
-    value: function update(delta, ballHeight) {
-      //this.position = ballHeight // Impossible to beat the computer
-      this.position += SPEED * delta * (ballHeight - this.position);
-    }
-  }]);
-  return Paddle;
-}();
-exports.default = Paddle;
-},{}],"script.js":[function(require,module,exports) {
-"use strict";
-
-var _Ball = _interopRequireDefault(require("./Ball.js"));
-var _Paddle = _interopRequireDefault(require("./Paddle.js"));
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-// Update Loop
-
-var ball = new _Ball.default(document.getElementById("ball"));
-var playerPaddle = new _Paddle.default(document.getElementById("player-paddle"));
-var computerPaddle = new _Paddle.default(document.getElementById("computer-paddle"));
-var playerScoreElem = document.getElementById("player-score");
-var computerScoreElem = document.getElementById("computer-score");
-var lastTime;
-function update(time) {
-  //console.log(time)
-  if (lastTime != null) {
-    var delta = time - lastTime;
-    ball.update(delta, [playerPaddle.rect(), computerPaddle.rect()]);
-    computerPaddle.update(delta, ball.y);
-    if (isLose()) handleLose();
+    return true;
   }
-  lastTime = time;
-  window.requestAnimationFrame(update);
+  return false;
 }
-function isLose() {
-  var rect = ball.rect();
-  return rect.right >= window.innerWidth || rect.left <= 0;
+function touched_lower_bar() {
+  var ball_top_numerical = ball.getBoundingClientRect().top;
+  var ball_left_numerical = ball.getBoundingClientRect().left;
+  var bar_left_numerical = parseInt(second_rod.style.left.substring(0, second_rod.style.left.length - 2));
+  if (ball_top_numerical + ball.clientHeight + second_rod.clientHeight >= document.documentElement.clientHeight && ball_left_numerical + ball.clientWidth / 2 > bar_left_numerical && ball_left_numerical + ball.clientWidth / 2 < bar_left_numerical + second_rod.clientWidth) {
+    if (!current_timeout_is_running) {
+      current_timeout_is_running = true;
+      setTimeout(function () {
+        current_score.second++;
+        current_timeout_is_running = false;
+        console.log("second", current_score.second);
+      }, 200);
+    }
+    return true;
+  }
+  return false;
 }
-function handleLose() {
-  var rect = ball.rect();
-  if (rect.right >= window.innerWidth) {
-    playerScoreElem.textContent = parseInt(playerScoreElem.textContent) + 1;
+function set_interval_for_ball() {
+  var interval_id = setInterval(function () {
+    var numeric_left = ball.getBoundingClientRect().left;
+    var numeric_top = ball.getBoundingClientRect().top;
+    if (numeric_left <= 0)
+      //hit left
+      {
+        var class_present = ball.classList[0];
+        if (class_present == "animate-top-left") {
+          ball.classList.remove(class_present);
+          ball.classList.add("animate-top-right");
+        } else if (class_present == "animate-bottom-left") {
+          ball.classList.remove(class_present);
+          ball.classList.add("animate-bottom-right");
+        }
+      } else if (numeric_left + ball.offsetWidth >= document.documentElement.clientWidth)
+      //hit right
+      {
+        var _class_present = ball.classList[0];
+        if (_class_present == "animate-top-right") {
+          ball.classList.remove(_class_present);
+          ball.classList.add("animate-top-left");
+        } else if (_class_present == "animate-bottom-right") {
+          ball.classList.remove(_class_present);
+          ball.classList.add("animate-bottom-left");
+        }
+      } else if (numeric_top <= 0 || numeric_top + ball.offsetHeight >= document.documentElement.clientHeight)
+      //game over
+      {
+        ball.classList.remove(ball.classList[0]);
+        if (numeric_top <= 0) {
+          action.loosing_side = "first";
+          action.lost = true;
+        } else if (numeric_top + ball.offsetHeight >= document.documentElement.clientHeight) {
+          action.loosing_side = "second";
+          action.lost = true;
+        }
+        centeralise_element(ball);
+        centeralise_element(first_rod);
+        centeralise_element(second_rod);
+        alert('Game Over');
+        clearInterval(interval_id);
+        if (current_score.first > localStorage.getItem('first')) {
+          localStorage.setItem('first', current_score.first);
+        }
+        if (current_score.second > localStorage.getItem('second')) {
+          localStorage.setItem('second', current_score.second);
+        }
+        current_score.first = 0;
+        current_score.second = 0;
+        show_score();
+      } else if (touched_lower_bar())
+      //touched lower bar
+      {
+        var _class_present2 = ball.classList[0];
+        if (_class_present2 == "animate-bottom-right") {
+          ball.classList.remove(_class_present2);
+          ball.classList.add("animate-top-right");
+        } else if (_class_present2 == "animate-bottom-left") {
+          ball.classList.remove(_class_present2);
+          ball.classList.add("animate-top-left");
+        }
+      } else if (touched_upper_bar())
+      //touched upper bar
+      {
+        var _class_present3 = ball.classList[0];
+        if (_class_present3 == "animate-top-right") {
+          ball.classList.remove(_class_present3);
+          ball.classList.add("animate-bottom-right");
+        } else if (_class_present3 == "animate-top-left") {
+          ball.classList.remove(_class_present3);
+          ball.classList.add("animate-bottom-left");
+        }
+      }
+  }, 1);
+}
+function show_score() {
+  if (localStorage.getItem('first') == null) {
+    localStorage.setItem('first', 0);
+    localStorage.setItem('second', 0);
+    window.alert("This is your first time");
   } else {
-    computerScoreElem.textContent = parseInt(computerScoreElem.textContent) + 1;
+    window.alert("Rod 1 has a maximum score of " + localStorage.getItem('first').toString() + "\n" + "Rod 2 has a maximum score of " + localStorage.getItem('second'));
   }
-  ball.reset();
-  computerPaddle.reset();
 }
-document.addEventListener("mousemove", function (e) {
-  playerPaddle.position = e.y / window.innerHeight * 100; // Converting to %
+centeralise_element(first_rod);
+centeralise_element(second_rod);
+centeralise_element(ball);
+show_score();
+add_event_listener_to_rods();
+set_interval_for_ball();
+document.addEventListener('keydown', function (event) {
+  if (event.keyCode == 13) {
+    if (action.lost) {
+      if (action.loosing_side == "first") {
+        ball.classList.add('animate-bottom-right');
+      } else {
+        ball.classList.add('animate-top-right');
+      }
+    } else ball.classList.add('animate-bottom-right');
+    set_interval_for_ball();
+  }
 });
-
-window.requestAnimationFrame(update);
-},{"./Ball.js":"Ball.js","./Paddle.js":"Paddle.js"}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 var OldModule = module.bundle.Module;
@@ -325,7 +329,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "46549" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40661" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];

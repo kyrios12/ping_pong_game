@@ -1,69 +1,70 @@
-*, *::after, *::before {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box
+:root
+{
+    --time-duration:9s;
 }
-
-:root {
-    --base-hue: 255;
-    --foreground-color: hsl(var(--base-hue), 50%, 80%);
-}
-
 body {
-    background: hsl(var(--base-hue), 50%, 20%);
-    overflow: hidden;
+    margin: 0px;
 }
-
-.paddle {
-    --position: 50;
-    position: absolute;
-    background-color: var(--foreground-color);
-    top: calc(var(--position) * 1vh);
-    transform: translateY(-50%);
-    width: 1vw;
-    height: 10vh;
-    border-radius: 5px;
+body::-webkit-scrollbar
+{
+    overflow:hidden;
+    display:none;
 }
-
-.paddle.left {
-    left: 1vw;
+h3
+{
+    margin:0px;
 }
-
-.paddle.right {
-    right: 1vw;
+#rod-one {
+	position: absolute;
+	top: 0%;
+	background-color: crimson;
+	border: 2px solid black;
+    width: 20vw;
+    box-sizing: border-box;
+    border-radius: 20px;
+    height: 5vh;
+    padding:5px;
+    text-align: center;
 }
-
-.ball {
-    --x: 50;
-    --y: 50;
-
-    position: absolute;
-    background-color: var(--foreground-color);
-    left: calc(var(--x) * 1vw);
-    top: calc(var(--y) * 1vh);
+#rod-two {
+	position: absolute;
+	bottom: 0%;
+    background-color: crimson;
+    border-radius: 20px;;
+	border: 2px solid black;
+    width: 20vw;
+    box-sizing: border-box;
+    height: 5vh;
+    padding:5px;
+    text-align: center;
+}
+#ball {
+	height: 50px;
+    width: 50px;
+    position:absolute;
     border-radius: 50%;
-    transform: translate(-50%, -50%);
-    width: 2.5vh;
-    height: 2.5vh;
+    background-image:radial-gradient(green 0%,black 221%);
+    box-sizing: border-box;
 }
 
-.score {
-    display: flex;
-    justify-content: center;
-    font-weight: bold;
-    font-size: 7vh;
-    color: var(--foreground-color);
-}
 
-.score > * {
-    flex-grow: 1;
-    flex-basis: 0;
-    padding: 0 2vh;
-    margin: 1vh 0;
-    opacity: .5;
+.animate-top-right
+{
+    transition:transform linear var(--time-duration);
+    transform: translateX(2000px) translateY(-2000px);
 }
-
-.score > :first-child {
-    text-align: right;
-    border-right: .5vh solid var(--foreground-color)
+.animate-bottom-right
+{
+    transition:transform linear var(--time-duration);
+    transform: translateX(2000px) translateY(2000px);
+}
+.animate-top-left
+{
+    transition:transform linear var(--time-duration);
+    transform: translateX(-2000px) translateY(-2000px);
+}
+.animate-bottom-left
+{
+    transition:transform linear var(--time-duration);
+    transform: translateX(-2000px) translateY(2000px);
 }
