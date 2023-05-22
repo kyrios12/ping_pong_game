@@ -1,45 +1,30 @@
-html,body{
-    margin:0;
-    padding: 0;
+@import url('https://fonts.googleapis.com/css2?family=Bree+Serif&family=Caveat:wght@400;700&family=Lobster&family=Monoton&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Playfair+Display+SC:ital,wght@0,400;0,700;1,700&family=Playfair+Display:ital,wght@0,400;0,700;1,700&family=Roboto:ital,wght@0,400;0,700;1,400;1,700&family=Source+Sans+Pro:ital,wght@0,400;0,700;1,700&family=Work+Sans:ital,wght@0,400;0,700;1,700&display=swap');
+
+body {
+    margin: 0;
+    color: white;
 }
 
-body{
-   overflow: hidden;
-   background-color: black;
-}
-
-#left{
+.bg-container {
+    height: 100vh;
     position: relative;
-    width: 30px;
-    height: 200px;
-    background-color: white;
-    float: left;
 }
 
-#right{
+.rod1,
+.rod2 {
     position: relative;
-    width: 30px;
-    height: 200px;
-    background-color: white;    
-    float: right;
+    height: 30px;
+    border-radius: 40px;
+    width: 30%;
+    padding: 2px;
 }
 
-#ball{
-    position: absolute;
+.ball {
+    position: fixed;
+    top: 30px;
+    left: 50%-10px;
     width: 20px;
     height: 20px;
-    background-color:white;
-    border-radius: 50%;
-}
-
-#deli,#scoreleft,#scoreright{
-    font-size: 1000%;
-    color: white;
-    z-index: 10;
-}
-
-#goal{
-    font-size: 1000%;
-    transition: 1.5s all;
-    display: inline-block;
+    background-color: lightgreen;
+    border-radius: 44px;
 }

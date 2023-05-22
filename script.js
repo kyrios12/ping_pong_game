@@ -1,142 +1,140 @@
-//ps= player speed
-var ps = 15;
+let start = false;
+let movement = null;
+let score = null;
+let maxScore = null;
+let ballSpeedX = 2;
+let ballSpeedY = 2;
+let rod1 = document.getElementById("rod-1");
+let rod2 = document.getElementById("rod-2");
+let ball = document.getElementById("pong");
 
-function nfp(urpx) {
-    return Number(urpx.replace("px", ""))
+
+const rod1Name = "Rod 1";
+const rod2Name = "Rod 2";
+const storeName = "PPName";
+const storeScore = "PPMaxScore";
+
+let window_width = window.innerWidth;
+let window_height = window.innerHeight;
+
+rod1.style.left = 0;
+rod2.style.left = 0;
+ball.style.top = "30px";
+ball.style.left = window_width / 2 - 10 + "px";
+
+function resetBoard(rodName) {
+
+    rod1.style.left = 0;
+    rod2.style.left = 0;
+    ball.style.left = window_width / 2 - 10 + "px";
+
+    // Lossing player gets the ball
+    if (rodName === rod2Name) {
+        ball.style.top = '30px';
+        ballSpeedY = 2;
+    } else if (rodName === rod1Name) {
+        ball.style.top = "100%" - '30px';
+        ballSpeedY = -2;
+    }
+
+    score = 0;
+    start = false;
 }
 
-var r = document.getElementById('right');
-var l = document.getElementById('left');
-var b = document.getElementById('ball');
+function storeWin(rod, score) {
 
-var rscore = document.getElementById('scoreleft');
-var lscore = document.getElementById('scoreright');
-var ogoal = document.getElementById('goal');
+    maxScore= localStorage.getItem(storeScore);
+    if (score > maxScore) {
+        maxScore = score;
+        localStorage.setItem(storeName, rod);
+        localStorage.setItem(storeScore, maxScore);
+    }
 
-var w = window.innerWidth;
-var h = window.innerHeight;
 
-var map = []; // Or you could call it "key"
-onkeydown = onkeyup = function(e) {
-    e = e || event; // to deal with IE
-    map[e.keyCode] = e.type == 'keydown';
-    /*insert conditional here*/
+    clearInterval(movement);
+    resetBoard(rod);
+
+    alert(rod + " wins with a score of " + (score * 100) + ". Max score is: " + (maxScore * 100));
+
 }
 
+window.addEventListener('keypress', function(event) {
 
+    switch (event.key) {
+        case 'Enter':
+            if (!start) {
+                start = true;
+                let ballRect = ball.getBoundingClientRect();
+                let ballX = ballRect.x;
+                let ballY = ballRect.y;
+                let ballDia = ballRect.width;
 
-function keydown() {
-    //if key was up arrow
-    if (map[40]) {
-        if (nfp(r.style.top) + ps > h - 200)
-            r.style.top = h - 200 + "px";
-        else
-            r.style.top = nfp(r.style.top) + ps + "px";
+                let rod1Height = rod1.offsetHeight;
+                let rod2Height = rod2.offsetHeight;
+                let rod1Width = rod1.offsetWidth;
+                let rod2Width = rod2.offsetWidth;
+
+                movement = setInterval(function() {
+                    // Move ball 
+                    let coordinates1 = rod1.getBoundingClientRect();
+                    let coordinates2 = rod2.getBoundingClientRect();
+                    ballX += ballSpeedX;
+                    ballY += ballSpeedY;
+
+                    let rod1X = coordinates1.x;
+                    let rod2X = coordinates2.x;
+
+                    ball.style.left = ballX + 'px';
+                    ball.style.top = ballY + 'px';
+
+                    if ((ballX + ballDia) > window_width || ballX < 0) {
+                        ballSpeedX = -ballSpeedX; // Reverses the direction
+                    }
+
+                    // It specifies the center of the ball on the viewport
+                    let ballPos = ballX + ballDia / 2;
+
+                    // Check for Rod 1
+                    if (ballY <= rod1Height) {
+                        ballSpeedY = -ballSpeedY; // Reverses the direction
+                        score++;
+
+                        // Check if the game ends
+                        if ((ballPos < rod1X) || (ballPos > (rod1X + rod1Width))) {
+                            storeWin(rod2Name, score);
+                        }
+                    }
+
+                    // Check for Rod 2
+                    else if ((ballY + ballDia) >= (window_height - rod2Height)) {
+                        ballSpeedY = -ballSpeedY; // Reverses the direction
+                        score++;
+
+                        // Check if the game ends
+                        if ((ballPos < rod2X) || (ballPos > (rod2X + rod2Width))) {
+                            storeWin(rod1Name, score);
+                        }
+                    }
+
+                }, 10);
+            }
+            break;
+
+        case 'a':
+            if (start && parseInt(rod1.style.left) > -34) {
+                rod1.style.left = parseInt(rod1.style.left) - 2 + "%";
+                rod2.style.left = parseInt(rod2.style.left) - 2 + "%";
+            }
+            break;
+
+        case 'd':
+            if (start && parseInt(rod1.style.left) < 34) {
+                rod1.style.left = parseInt(rod1.style.left) + 2 + "%";
+                rod2.style.left = parseInt(rod2.style.left) + 2 + "%";
+            }
+            break;
+
+        default:
+            // code
     }
-
-
-
-    //if key was down arrow
-    else if (map[38]) {
-        if (nfp(r.style.top) - ps < 0)
-            r.style.top = 0 + "px";
-        else
-            r.style.top = nfp(r.style.top) - ps + "px";
-    }
-
-
-    //if key was s
-    if (map[83]) {
-        if (nfp(l.style.top) + ps > h - 200)
-            l.style.top = h - 200 + "px";
-        else
-            l.style.top = nfp(l.style.top) + ps + "px";
-    }
-
-    //if key was w
-    else if (map[87]) {
-        if (nfp(l.style.top) - ps < 0)
-            l.style.top = 0 + "px";
-        else
-            l.style.top = nfp(l.style.top) - ps + "px";
-    }
-
-    //40 down, 38 up
-    //w 87,s 83
-}
-
-
-var speedx = 3,
-    speedy = 1;
-var balltime = 1;
-b.style.left = w / 2 + "px";
-
-function ball() {
-    b.style.left = nfp(b.style.left) + speedx + "px";
-    b.style.top = nfp(b.style.top) + speedy + "px";
-}
-
-
-
-
-function moveball() {
-    ball();
-
-    //remove overflow y
-    if (h < nfp(b.style.top) + 20 || nfp(b.style.top) < 0) {
-        speedy *= -1;
-    }
-
-    //overflow-x right
-    if (nfp(b.style.left) >= w - 50) {
-        if (nfp(r.style.top) <= nfp(b.style.top) + 20 && nfp(r.style.top) + 200 >= nfp(b.style.top)) {
-            speedx *= -1;
-        } else if (nfp(b.style.left) >= w - 20)
-            goal('left');
-    }
-
-
-
-
-    //remove overflow x in left ir get the goal in left
-    if (nfp(b.style.left) <= 30) {
-        if (nfp(l.style.top) <= nfp(b.style.top) + 20 && nfp(l.style.top) + 200 >= nfp(b.style.top)) {
-            speedx *= -1;
-        } else if (nfp(b.style.left) <= 0)
-            goal('right');
-    }
-
-
-
-    setTimeout(function() {
-        moveball()
-    }, balltime);
-}
-
-
-
-
-setInterval(function() {
-    keydown();
-}, 10);
-moveball();
-
-function goal(pos) {
-
-    ogoal.style.color = "white";
-
-    setTimeout(function() {
-        ogoal.style.color = "black"
-    }, 1000);
-
-    if (pos == "left")
-        rscore.innerHTML = Number(rscore.innerHTML) + 1;
-    else
-        lscore.innerHTML = Number(lscore.innerHTML) + 1;
-
-
-    speedx *= -1;
-    b.style.left = w / 2 + "px";
-
-
-}
+});

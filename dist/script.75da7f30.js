@@ -118,190 +118,120 @@ parcelRequire = (function (modules, cache, entry, globalName) {
 
   return newRequire;
 })({"script.js":[function(require,module,exports) {
-"use strict";
+var start = false;
+var movement = null;
+var score = null;
+var maxScore = null;
+var ballSpeedX = 2;
+var ballSpeedY = 2;
+var rod1 = document.getElementById("rod-1");
+var rod2 = document.getElementById("rod-2");
+var ball = document.getElementById("pong");
+var rod1Name = "Rod 1";
+var rod2Name = "Rod 2";
+var storeName = "PPName";
+var storeScore = "PPMaxScore";
+var window_width = window.innerWidth;
+var window_height = window.innerHeight;
+rod1.style.left = 0;
+rod2.style.left = 0;
+ball.style.top = "30px";
+ball.style.left = window_width / 2 - 10 + "px";
+function resetBoard(rodName) {
+  rod1.style.left = 0;
+  rod2.style.left = 0;
+  ball.style.left = window_width / 2 - 10 + "px";
 
-var first_rod = document.getElementById("rod-one");
-var second_rod = document.getElementById("rod-two");
-var ball = document.getElementById("ball");
-var current_timeout_is_running = false;
-var current_score = {
-  first: 0,
-  second: 0
-};
-var action = {
-  loosing_side: "",
-  lost: false
-};
-function centeralise_element(element) {
-  element.style.left = (document.documentElement.clientWidth / 2 - element.offsetWidth / 2).toString() + "px";
-  element.style.left = (document.documentElement.clientWidth / 2 - element.offsetWidth / 2).toString() + "px";
-  if (element == ball) {
-    if (action.lost) {
-      if (action.loosing_side == "first") {
-        ball.style.top = (first_rod.clientHeight + 5).toString() + "px";
-      } else {
-        ball.style.top = (document.documentElement.clientHeight - second_rod.clientHeight - ball.clientHeight - 5).toString() + "px";
-      }
-    } else element.style.top = (document.documentElement.clientHeight / 2).toString() + "px";
+  // Lossing player gets the ball
+  if (rodName === rod2Name) {
+    ball.style.top = '30px';
+    ballSpeedY = 2;
+  } else if (rodName === rod1Name) {
+    ball.style.top = "100%" - '30px';
+    ballSpeedY = -2;
   }
+  score = 0;
+  start = false;
 }
-function add_event_listener_to_rods() {
-  window.addEventListener("keydown", function (event) {
-    var code = event.keyCode;
-    if (code == 68) {
-      var left_numeric = parseInt(first_rod.style.left.substring(0, first_rod.style.left.length - 2));
-      left_numeric += 20;
-      if (left_numeric + first_rod.offsetWidth > document.documentElement.clientWidth) {
-        left_numeric = document.documentElement.clientWidth - first_rod.offsetWidth;
-      }
-      first_rod.style.left = left_numeric.toString() + "px";
-      second_rod.style.left = left_numeric.toString() + "px";
-    } else if (code == 65) {
-      var _left_numeric = parseInt(first_rod.style.left.substring(0, first_rod.style.left.length - 2));
-      _left_numeric -= 20;
-      if (_left_numeric < 0) {
-        _left_numeric = 0;
-      }
-      first_rod.style.left = _left_numeric.toString() + "px";
-      second_rod.style.left = _left_numeric.toString() + "px";
-    }
-  });
-}
-function touched_upper_bar() {
-  var ball_top_numerical = ball.getBoundingClientRect().top;
-  var ball_left_numerical = ball.getBoundingClientRect().left;
-  var bar_left_numerical = parseInt(first_rod.style.left.substring(0, first_rod.style.left.length - 2));
-  if (ball_top_numerical <= first_rod.clientHeight && ball_left_numerical + ball.clientWidth / 2 > bar_left_numerical && ball_left_numerical + ball.clientWidth / 2 < bar_left_numerical + first_rod.clientWidth) {
-    if (!current_timeout_is_running) {
-      current_timeout_is_running = true;
-      setTimeout(function () {
-        current_score.first++;
-        current_timeout_is_running = false;
-        console.log("first", current_score.first);
-      }, 200);
-    }
-    return true;
+function storeWin(rod, score) {
+  maxScore = localStorage.getItem(storeScore);
+  if (score > maxScore) {
+    maxScore = score;
+    localStorage.setItem(storeName, rod);
+    localStorage.setItem(storeScore, maxScore);
   }
-  return false;
+  clearInterval(movement);
+  resetBoard(rod);
+  alert(rod + " wins with a score of " + score * 100 + ". Max score is: " + maxScore * 100);
 }
-function touched_lower_bar() {
-  var ball_top_numerical = ball.getBoundingClientRect().top;
-  var ball_left_numerical = ball.getBoundingClientRect().left;
-  var bar_left_numerical = parseInt(second_rod.style.left.substring(0, second_rod.style.left.length - 2));
-  if (ball_top_numerical + ball.clientHeight + second_rod.clientHeight >= document.documentElement.clientHeight && ball_left_numerical + ball.clientWidth / 2 > bar_left_numerical && ball_left_numerical + ball.clientWidth / 2 < bar_left_numerical + second_rod.clientWidth) {
-    if (!current_timeout_is_running) {
-      current_timeout_is_running = true;
-      setTimeout(function () {
-        current_score.second++;
-        current_timeout_is_running = false;
-        console.log("second", current_score.second);
-      }, 200);
-    }
-    return true;
-  }
-  return false;
-}
-function set_interval_for_ball() {
-  var interval_id = setInterval(function () {
-    var numeric_left = ball.getBoundingClientRect().left;
-    var numeric_top = ball.getBoundingClientRect().top;
-    if (numeric_left <= 0)
-      //hit left
-      {
-        var class_present = ball.classList[0];
-        if (class_present == "animate-top-left") {
-          ball.classList.remove(class_present);
-          ball.classList.add("animate-top-right");
-        } else if (class_present == "animate-bottom-left") {
-          ball.classList.remove(class_present);
-          ball.classList.add("animate-bottom-right");
-        }
-      } else if (numeric_left + ball.offsetWidth >= document.documentElement.clientWidth)
-      //hit right
-      {
-        var _class_present = ball.classList[0];
-        if (_class_present == "animate-top-right") {
-          ball.classList.remove(_class_present);
-          ball.classList.add("animate-top-left");
-        } else if (_class_present == "animate-bottom-right") {
-          ball.classList.remove(_class_present);
-          ball.classList.add("animate-bottom-left");
-        }
-      } else if (numeric_top <= 0 || numeric_top + ball.offsetHeight >= document.documentElement.clientHeight)
-      //game over
-      {
-        ball.classList.remove(ball.classList[0]);
-        if (numeric_top <= 0) {
-          action.loosing_side = "first";
-          action.lost = true;
-        } else if (numeric_top + ball.offsetHeight >= document.documentElement.clientHeight) {
-          action.loosing_side = "second";
-          action.lost = true;
-        }
-        centeralise_element(ball);
-        centeralise_element(first_rod);
-        centeralise_element(second_rod);
-        alert('Game Over');
-        clearInterval(interval_id);
-        if (current_score.first > localStorage.getItem('first')) {
-          localStorage.setItem('first', current_score.first);
-        }
-        if (current_score.second > localStorage.getItem('second')) {
-          localStorage.setItem('second', current_score.second);
-        }
-        current_score.first = 0;
-        current_score.second = 0;
-        show_score();
-      } else if (touched_lower_bar())
-      //touched lower bar
-      {
-        var _class_present2 = ball.classList[0];
-        if (_class_present2 == "animate-bottom-right") {
-          ball.classList.remove(_class_present2);
-          ball.classList.add("animate-top-right");
-        } else if (_class_present2 == "animate-bottom-left") {
-          ball.classList.remove(_class_present2);
-          ball.classList.add("animate-top-left");
-        }
-      } else if (touched_upper_bar())
-      //touched upper bar
-      {
-        var _class_present3 = ball.classList[0];
-        if (_class_present3 == "animate-top-right") {
-          ball.classList.remove(_class_present3);
-          ball.classList.add("animate-bottom-right");
-        } else if (_class_present3 == "animate-top-left") {
-          ball.classList.remove(_class_present3);
-          ball.classList.add("animate-bottom-left");
-        }
+window.addEventListener('keypress', function (event) {
+  switch (event.key) {
+    case 'Enter':
+      if (!start) {
+        start = true;
+        var ballRect = ball.getBoundingClientRect();
+        var ballX = ballRect.x;
+        var ballY = ballRect.y;
+        var ballDia = ballRect.width;
+        var rod1Height = rod1.offsetHeight;
+        var rod2Height = rod2.offsetHeight;
+        var rod1Width = rod1.offsetWidth;
+        var rod2Width = rod2.offsetWidth;
+        movement = setInterval(function () {
+          // Move ball 
+          var coordinates1 = rod1.getBoundingClientRect();
+          var coordinates2 = rod2.getBoundingClientRect();
+          ballX += ballSpeedX;
+          ballY += ballSpeedY;
+          var rod1X = coordinates1.x;
+          var rod2X = coordinates2.x;
+          ball.style.left = ballX + 'px';
+          ball.style.top = ballY + 'px';
+          if (ballX + ballDia > window_width || ballX < 0) {
+            ballSpeedX = -ballSpeedX; // Reverses the direction
+          }
+
+          // It specifies the center of the ball on the viewport
+          var ballPos = ballX + ballDia / 2;
+
+          // Check for Rod 1
+          if (ballY <= rod1Height) {
+            ballSpeedY = -ballSpeedY; // Reverses the direction
+            score++;
+
+            // Check if the game ends
+            if (ballPos < rod1X || ballPos > rod1X + rod1Width) {
+              storeWin(rod2Name, score);
+            }
+          }
+
+          // Check for Rod 2
+          else if (ballY + ballDia >= window_height - rod2Height) {
+            ballSpeedY = -ballSpeedY; // Reverses the direction
+            score++;
+
+            // Check if the game ends
+            if (ballPos < rod2X || ballPos > rod2X + rod2Width) {
+              storeWin(rod1Name, score);
+            }
+          }
+        }, 10);
       }
-  }, 1);
-}
-function show_score() {
-  if (localStorage.getItem('first') == null) {
-    localStorage.setItem('first', 0);
-    localStorage.setItem('second', 0);
-    window.alert("This is your first time");
-  } else {
-    window.alert("Rod 1 has a maximum score of " + localStorage.getItem('first').toString() + "\n" + "Rod 2 has a maximum score of " + localStorage.getItem('second'));
-  }
-}
-centeralise_element(first_rod);
-centeralise_element(second_rod);
-centeralise_element(ball);
-show_score();
-add_event_listener_to_rods();
-set_interval_for_ball();
-document.addEventListener('keydown', function (event) {
-  if (event.keyCode == 13) {
-    if (action.lost) {
-      if (action.loosing_side == "first") {
-        ball.classList.add('animate-bottom-right');
-      } else {
-        ball.classList.add('animate-top-right');
+      break;
+    case 'a':
+      if (start && parseInt(rod1.style.left) > -34) {
+        rod1.style.left = parseInt(rod1.style.left) - 2 + "%";
+        rod2.style.left = parseInt(rod2.style.left) - 2 + "%";
       }
-    } else ball.classList.add('animate-bottom-right');
-    set_interval_for_ball();
+      break;
+    case 'd':
+      if (start && parseInt(rod1.style.left) < 34) {
+        rod1.style.left = parseInt(rod1.style.left) + 2 + "%";
+        rod2.style.left = parseInt(rod2.style.left) + 2 + "%";
+      }
+      break;
+    default:
+    // code
   }
 });
 },{}],"node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
@@ -329,7 +259,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = "" || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + "40661" + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + "36257" + '/');
   ws.onmessage = function (event) {
     checkedAssets = {};
     assetsToAccept = [];
